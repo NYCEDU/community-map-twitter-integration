@@ -4,10 +4,9 @@ var CONSUMER_KEY = 'XpARgJqqq6KcVDx1b3hpbmeWk';
 var CONSUMER_SECRET = '4CobTfxkgGsk6qiC4J1fDHvdxTsDJ3obwIPX8rcQpkRb7SsHbD'; //unsure how to keep this credential secret since this app is public. 
 var PROJECT_KEY = 'M2sFbCVUA6zeWCc_aFjLyv4GXkj8jwwlY';
 
-Utilities.sleep(1000); //suggested by Google to slow down the calls to the Google Scripts service. Too many calls too quickly will result in an error.
 
 function getTwitterDescription(username) { //argument 'username' is an array of Twitter usernames supplied by column D of the spreadsheet
-
+    Utilities.sleep(1000); //suggested by Google to slow down the calls to the Google Scripts service. Too many calls too quickly will result in an error.
     var cache = CacheService.getPublicCache();
     var cached = cache.get(username);
     var service = getTwitterService(); 
@@ -22,7 +21,8 @@ function getTwitterDescription(username) { //argument 'username' is an array of 
       var requestUrl = 'https://api.twitter.com/1.1/users/show.json?screen_name='+username;
       var requestResponse = service.fetch(requestUrl); //log into Twitter API and send the request url.
       var userDescription = JSON.parse(requestResponse.getContentText()).description; //parse the user description that was returned from the API into a string
-      cache.put(username, userDescription, 21600); //store the user description string in the cache, using it's unique username as they key, for the maximum allowed 6 hours
+      var cacheTimeLimit = Math.floor((Math.random() * 21600) + 7200);
+      cache.put(username, userDescription, cacheTimeLimit); //store the user description string in the cache, using it's unique username as they key, for the maximum allowed 6 hours
       return userDescription+' (via API)' //return the user description from the API to the corresponding cell in the spreadsheet 
     }
   }
